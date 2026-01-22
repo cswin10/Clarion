@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { GitCompareArrows, Building2, TrendingUp, AlertTriangle, Check, X } from 'lucide-react';
+import { GitCompareArrows, Building2, TrendingUp, Check, X } from 'lucide-react';
 import { PageWrapper } from '@/components/layout/PageWrapper';
 import { Header } from '@/components/layout/Header';
 import { Card } from '@/components/ui/Card';

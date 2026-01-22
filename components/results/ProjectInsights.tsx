@@ -11,8 +11,6 @@ interface Props {
 }
 
 export function ProjectInsights({ project, results }: Props) {
-  const recommendedScenario = results.scenarios[results.recommendedScenario];
-
   // Generate insights based on the analysis
   const keyFindings = generateKeyFindings(project, results);
   const improvements = generateImprovements(project, results);
