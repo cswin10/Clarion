@@ -6,20 +6,11 @@ import {
   Text,
   View,
   StyleSheet,
-  Font,
 } from '@react-pdf/renderer';
 import { Project } from '@/lib/types';
 import { formatCurrency, formatPercentage } from '@/lib/calculations';
 
-// Register fonts (using system fonts as fallback)
-Font.register({
-  family: 'Inter',
-  fonts: [
-    { src: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2', fontWeight: 400 },
-    { src: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiJ-Ek-_EeA.woff2', fontWeight: 600 },
-    { src: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuFuYAZ9hiJ-Ek-_EeA.woff2', fontWeight: 700 },
-  ],
-});
+// Using built-in Helvetica font family to avoid font embedding issues
 
 const colors = {
   navy: '#0A1628',
@@ -39,12 +30,12 @@ const styles = StyleSheet.create({
   page: {
     backgroundColor: colors.white,
     padding: 40,
-    fontFamily: 'Inter',
+    fontFamily: 'Helvetica',
   },
   coverPage: {
     backgroundColor: colors.navy,
     padding: 0,
-    fontFamily: 'Inter',
+    fontFamily: 'Helvetica',
   },
   coverContent: {
     flex: 1,
