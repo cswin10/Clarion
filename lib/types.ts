@@ -260,4 +260,5 @@ export interface AppContextType extends AppState {
   setCurrentProject: (project: Project | null) => void;
   updateProjectInputs: (projectId: string, section: FormSection, data: unknown) => void;
   generateResults: (projectId: string) => ScenarioResults;
+  setProjectResults: (projectId: string, results: ScenarioResults) => void;
 }

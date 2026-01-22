@@ -23,6 +23,141 @@ import { RecommendationPanel, RiskFlags } from '@/components/results/Recommendat
 import { ChatPanel } from '@/components/results/ChatPanel';
 import { AILoadingOverlay } from '@/components/ui/AILoadingState';
 import { useApp } from '@/lib/store';
+import { ScenarioResults, Scenario, RiskFlag, CashFlowData, RiskReturnData } from '@/lib/types';
+
+// Helper function to convert AI scenarios to our ScenarioResults format
+interface AIScenario {
+  id: 'A' | 'B' | 'C';
+  name: string;
+  summary: string;
+  strategy: string;
+  capitalExpenditure: number;
+  projectedAnnualIncome: number;
+  netYield: number;
+  irr: number;
+  esgRating: string;
+  riskLevel: 'Low' | 'Medium' | 'High';
+  complexity: 'Low' | 'Medium' | 'High';
+  timelineMonths: number;
+  keyConsiderations: string[];
+  epcRatingAchieved?: string;
+  meesCompliant?: boolean;
+  paybackPeriod?: number;
+}
+
+interface AIScenarioResponse {
+  scenarios: {
+    A: AIScenario;
+    B: AIScenario;
+    C: AIScenario;
+  };
+  recommendation: 'A' | 'B' | 'C';
+  recommendationRationale: string;
+}
+
+interface AINarratives {
+  executiveSummary?: string;
+  riskAssessment?: string;
+}
+
+function convertAIScenariosToResults(
+  aiResponse: AIScenarioResponse,
+  narratives: AINarratives | null
+): ScenarioResults {
+  const convertScenario = (ai: AIScenario): Scenario => ({
+    id: ai.id,
+    name: ai.name,
+    description: ai.strategy || ai.summary,
+    capitalRequired: ai.capitalExpenditure,
+    projectedAnnualIncome: ai.projectedAnnualIncome,
+    netYield: ai.netYield,
+    irr: ai.irr,
+    esgScore: (ai.esgRating as 'A' | 'B' | 'C' | 'D' | 'E' | 'F') || 'C',
+    riskRating: ai.riskLevel,
+    complexityRating: ai.complexity,
+    timeline: ai.timelineMonths,
+    paybackPeriod: ai.paybackPeriod || (ai.capitalExpenditure / ai.projectedAnnualIncome),
+    epcRatingAchieved: (ai.epcRatingAchieved as 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G') || 'C',
+    meesCompliant: ai.meesCompliant ?? true,
+    planningComplexity: ai.complexity,
+    deliveryRisk: ai.riskLevel,
+  });
+
+  // Generate cash flow projections based on scenarios
+  const cashFlowData: CashFlowData[] = [];
+  for (let year = 1; year <= 10; year++) {
+    const scenarioA = aiResponse.scenarios.A;
+    const scenarioB = aiResponse.scenarios.B;
+    const scenarioC = aiResponse.scenarios.C;
+
+    // Simple cash flow model: -capex in year 1, then annual income accumulates
+    const getCashFlow = (s: AIScenario, yr: number) => {
+      if (yr === 1) return -s.capitalExpenditure + (s.projectedAnnualIncome * 0.5);
+      return (yr - 1) * s.projectedAnnualIncome - s.capitalExpenditure + s.projectedAnnualIncome;
+    };
+
+    cashFlowData.push({
+      year,
+      scenarioA: Math.round(getCashFlow(scenarioA, year)),
+      scenarioB: Math.round(getCashFlow(scenarioB, year)),
+      scenarioC: Math.round(getCashFlow(scenarioC, year)),
+    });
+  }
+
+  // Risk/return data for scatter plot
+  const getRiskScore = (level: string) => {
+    if (level === 'Low') return 2;
+    if (level === 'Medium') return 5;
+    return 8;
+  };
+
+  const riskReturnData: RiskReturnData[] = [
+    { scenario: 'A', risk: getRiskScore(aiResponse.scenarios.A.riskLevel), irr: aiResponse.scenarios.A.irr },
+    { scenario: 'B', risk: getRiskScore(aiResponse.scenarios.B.riskLevel), irr: aiResponse.scenarios.B.irr },
+    { scenario: 'C', risk: getRiskScore(aiResponse.scenarios.C.riskLevel), irr: aiResponse.scenarios.C.irr },
+  ];
+
+  // Generate risk flags from AI considerations
+  const riskFlags: RiskFlag[] = [];
+  const allConsiderations = [
+    ...aiResponse.scenarios.A.keyConsiderations,
+    ...aiResponse.scenarios.B.keyConsiderations,
+    ...aiResponse.scenarios.C.keyConsiderations,
+  ];
+
+  // Deduplicate and convert to risk flags
+  const uniqueConsiderations = Array.from(new Set(allConsiderations)).slice(0, 5);
+  uniqueConsiderations.forEach((consideration, index) => {
+    riskFlags.push({
+      severity: index === 0 ? 'high' : index < 3 ? 'medium' : 'low',
+      message: consideration,
+    });
+  });
+
+  // Determine recommendation type
+  const recommendedScenario = aiResponse.scenarios[aiResponse.recommendation];
+  let recommendationType: 'Proceed' | 'Optimise' | 'Exit' = 'Optimise';
+  if (recommendedScenario.riskLevel === 'Low' && recommendedScenario.irr > 10) {
+    recommendationType = 'Proceed';
+  } else if (recommendedScenario.riskLevel === 'High' && recommendedScenario.irr < 8) {
+    recommendationType = 'Exit';
+  }
+
+  return {
+    recommendation: recommendationType,
+    recommendationSummary: narratives?.executiveSummary?.substring(0, 500) || aiResponse.recommendationRationale,
+    recommendedScenario: aiResponse.recommendation,
+    scenarios: {
+      A: convertScenario(aiResponse.scenarios.A),
+      B: convertScenario(aiResponse.scenarios.B),
+      C: convertScenario(aiResponse.scenarios.C),
+    },
+    cashFlowData,
+    riskReturnData,
+    riskFlags,
+    generatedAt: new Date().toISOString(),
+  };
+}
 
 // Dynamic import for charts to avoid SSR issues
 const CashFlowChart = dynamic(
@@ -46,7 +181,7 @@ export default function ResultsPage() {
   const router = useRouter();
   const projectId = params.id as string;
 
-  const { isAuthenticated, isLoading, projects, generateResults } = useApp();
+  const { isAuthenticated, isLoading, projects, generateResults, setProjectResults } = useApp();
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [aiLoadingMessage, setAiLoadingMessage] = useState('');
   const useAI = true; // Enable AI by default
@@ -121,17 +256,16 @@ export default function ResultsPage() {
         }),
       });
 
+      let narratives = null;
       if (narrativeResponse.ok) {
-        // Narratives generated - could be used for enhanced PDF reports
-        await narrativeResponse.json();
+        narratives = await narrativeResponse.json();
       }
 
-      // Convert AI scenarios to our format and update project
-      // For now, we'll fall back to the standard calculation
-      // The AI scenarios could be stored separately or merged
-
+      // Convert AI scenarios to ScenarioResults format
       setAiLoadingMessage('Finalising analysis...');
-      generateResults(projectId);
+
+      const convertedResults = convertAIScenariosToResults(aiScenarios, narratives);
+      setProjectResults(projectId, convertedResults);
 
     } catch (error) {
       console.error('AI generation error:', error);
@@ -141,7 +275,7 @@ export default function ResultsPage() {
       setIsGeneratingAI(false);
       setAiLoadingMessage('');
     }
-  }, [project, projectId, generateResults, isGeneratingAI]);
+  }, [project, projectId, generateResults, setProjectResults, isGeneratingAI]);
 
   // Auto-generate results if not already done
   useEffect(() => {
