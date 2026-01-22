@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Building2, Bell, Shield, Palette, Save, Key } from 'lucide-react';
+import { User, Bell, Palette, Save, Key } from 'lucide-react';
 import { PageWrapper } from '@/components/layout/PageWrapper';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
