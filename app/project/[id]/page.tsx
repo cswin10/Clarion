@@ -140,14 +140,23 @@ export default function ProjectDetailPage() {
 
   return (
     <PageWrapper>
-      <div className="flex gap-8">
+      {/* Back Link - Mobile */}
+      <Link
+        href="/dashboard"
+        className="inline-flex items-center gap-2 text-text-secondary hover:text-gold transition-colors mb-4 lg:hidden"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <span>Back to Projects</span>
+      </Link>
+
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
         {/* Left Sidebar - Project Info & Navigation */}
-        <div className="w-80 shrink-0">
-          <div className="sticky top-8 space-y-6">
-            {/* Back Link */}
+        <div className="w-full lg:w-80 lg:shrink-0">
+          <div className="lg:sticky lg:top-8 space-y-4 lg:space-y-6">
+            {/* Back Link - Desktop */}
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 text-text-secondary hover:text-gold transition-colors"
+              className="hidden lg:inline-flex items-center gap-2 text-text-secondary hover:text-gold transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Back to Projects</span>
@@ -156,11 +165,11 @@ export default function ProjectDetailPage() {
             {/* Project Info Card */}
             <Card variant="elevated" padding="lg">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-card bg-gold/10 flex items-center justify-center">
-                  <Building2 className="w-6 h-6 text-gold" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-card bg-gold/10 flex items-center justify-center shrink-0">
+                  <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-gold" />
                 </div>
-                <div>
-                  <h1 className="font-semibold text-text-primary text-lg">
+                <div className="min-w-0">
+                  <h1 className="font-semibold text-text-primary text-base sm:text-lg truncate">
                     {project.name}
                   </h1>
                   <StatusBadge status={project.status} />
@@ -169,11 +178,11 @@ export default function ProjectDetailPage() {
 
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2 text-text-secondary">
-                  <MapPin className="w-4 h-4 text-text-muted" />
-                  <span>{project.address}, {project.city}</span>
+                  <MapPin className="w-4 h-4 text-text-muted shrink-0" />
+                  <span className="truncate">{project.address}, {project.city}</span>
                 </div>
                 <div className="flex items-center gap-2 text-text-secondary">
-                  <Calendar className="w-4 h-4 text-text-muted" />
+                  <Calendar className="w-4 h-4 text-text-muted shrink-0" />
                   <span>Updated {formatDate(project.updatedAt)}</span>
                 </div>
               </div>
@@ -192,9 +201,9 @@ export default function ProjectDetailPage() {
               </div>
             </Card>
 
-            {/* Section Navigation */}
+            {/* Section Navigation - Horizontal scroll on mobile */}
             <Card variant="bordered" padding="sm">
-              <nav className="space-y-1">
+              <nav className="flex lg:flex-col gap-2 lg:gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 scrollbar-hide">
                 {sections.map((section, index) => {
                   const Icon = section.icon;
                   const isActive = activeSection === section.id;
@@ -205,8 +214,8 @@ export default function ProjectDetailPage() {
                       key={section.id}
                       onClick={() => setActiveSection(section.id)}
                       className={`
-                        w-full flex items-center gap-3 px-4 py-3 rounded-button
-                        transition-all duration-200 text-left
+                        flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 rounded-button
+                        transition-all duration-200 text-left shrink-0 lg:shrink lg:w-full
                         ${
                           isActive
                             ? 'bg-gold/10 text-gold'
@@ -214,10 +223,10 @@ export default function ProjectDetailPage() {
                         }
                       `}
                     >
-                      <span className="w-6 h-6 rounded-full bg-charcoal flex items-center justify-center text-xs font-medium">
+                      <span className="w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-charcoal flex items-center justify-center text-xs font-medium shrink-0">
                         {isComplete ? (
                           <svg
-                            className="w-4 h-4 text-success"
+                            className="w-3 h-3 lg:w-4 lg:h-4 text-success"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -234,14 +243,15 @@ export default function ProjectDetailPage() {
                         )}
                       </span>
                       <span
-                        className={`flex-1 text-sm font-medium ${
+                        className={`text-xs lg:text-sm font-medium whitespace-nowrap lg:whitespace-normal lg:flex-1 ${
                           isActive ? 'text-gold' : ''
                         }`}
                       >
-                        {section.name}
+                        <span className="lg:hidden">{section.name.split(' ')[0]}</span>
+                        <span className="hidden lg:inline">{section.name}</span>
                       </span>
                       <Icon
-                        className={`w-4 h-4 ${
+                        className={`w-4 h-4 hidden lg:block ${
                           isActive ? 'text-gold' : isComplete ? 'text-success' : 'text-text-muted'
                         }`}
                       />
@@ -280,11 +290,11 @@ export default function ProjectDetailPage() {
 
         {/* Main Content - Form */}
         <div className="flex-1 min-w-0">
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-text-primary tracking-heading">
+          <div className="mb-4 lg:mb-6">
+            <h2 className="text-lg lg:text-xl font-semibold text-text-primary tracking-heading">
               {sections.find((s) => s.id === activeSection)?.name}
             </h2>
-            <p className="text-text-secondary mt-1">
+            <p className="text-text-secondary text-sm lg:text-base mt-1">
               Complete this section to continue with your feasibility analysis.
             </p>
           </div>

@@ -98,19 +98,19 @@ export default function SettingsPage() {
   return (
     <PageWrapper>
       <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-text-primary tracking-heading mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-xl sm:text-2xl font-bold text-text-primary tracking-heading mb-2">
             Settings
           </h1>
-          <p className="text-text-secondary">
+          <p className="text-text-secondary text-sm sm:text-base">
             Manage your account settings and preferences
           </p>
         </div>
 
-        <div className="flex gap-8">
-          {/* Sidebar */}
-          <div className="w-48 shrink-0">
-            <nav className="space-y-1">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+          {/* Sidebar - Horizontal scroll on mobile */}
+          <div className="w-full lg:w-48 lg:shrink-0">
+            <nav className="flex lg:flex-col gap-2 lg:gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 scrollbar-hide">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -120,8 +120,8 @@ export default function SettingsPage() {
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`
-                      w-full flex items-center gap-3 px-4 py-3 rounded-button
-                      transition-all duration-200 text-left
+                      flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 rounded-button
+                      transition-all duration-200 text-left shrink-0 lg:shrink lg:w-full
                       ${
                         isActive
                           ? 'bg-gold/10 text-gold'
@@ -130,7 +130,7 @@ export default function SettingsPage() {
                     `}
                   >
                     <Icon className="w-4 h-4" />
-                    <span className="text-sm font-medium">{tab.label}</span>
+                    <span className="text-xs lg:text-sm font-medium whitespace-nowrap">{tab.label}</span>
                   </button>
                 );
               })}
@@ -147,16 +147,16 @@ export default function SettingsPage() {
                 </h2>
 
                 <div className="space-y-6">
-                  <div className="flex items-center gap-6">
-                    <div className="w-20 h-20 rounded-full bg-charcoal flex items-center justify-center">
-                      <User className="w-10 h-10 text-text-secondary" />
+                  <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-charcoal flex items-center justify-center">
+                      <User className="w-8 h-8 sm:w-10 sm:h-10 text-text-secondary" />
                     </div>
                     <Button variant="outline" size="sm">
                       Change Avatar
                     </Button>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <Input
                       label="Full Name"
                       value={profileSettings.name}
@@ -174,7 +174,7 @@ export default function SettingsPage() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <Input
                       label="Company"
                       placeholder="Your company name"
@@ -345,17 +345,17 @@ export default function SettingsPage() {
                 <div className="space-y-6">
                   <div>
                     <h3 className="font-medium text-text-primary mb-3">Theme</h3>
-                    <div className="grid grid-cols-3 gap-4">
-                      <button className="p-4 rounded-card bg-navy border-2 border-gold flex flex-col items-center gap-2">
-                        <div className="w-8 h-8 rounded bg-charcoal" />
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                      <button className="p-3 sm:p-4 rounded-card bg-navy border-2 border-gold flex flex-row sm:flex-col items-center gap-3 sm:gap-2">
+                        <div className="w-8 h-8 rounded bg-charcoal shrink-0" />
                         <span className="text-sm text-gold">Dark (Default)</span>
                       </button>
-                      <button className="p-4 rounded-card bg-charcoal border border-slate/30 flex flex-col items-center gap-2 opacity-50 cursor-not-allowed">
-                        <div className="w-8 h-8 rounded bg-white" />
+                      <button className="p-3 sm:p-4 rounded-card bg-charcoal border border-slate/30 flex flex-row sm:flex-col items-center gap-3 sm:gap-2 opacity-50 cursor-not-allowed">
+                        <div className="w-8 h-8 rounded bg-white shrink-0" />
                         <span className="text-sm text-text-secondary">Light (Coming Soon)</span>
                       </button>
-                      <button className="p-4 rounded-card bg-charcoal border border-slate/30 flex flex-col items-center gap-2 opacity-50 cursor-not-allowed">
-                        <div className="w-8 h-8 rounded bg-gradient-to-b from-charcoal to-white" />
+                      <button className="p-3 sm:p-4 rounded-card bg-charcoal border border-slate/30 flex flex-row sm:flex-col items-center gap-3 sm:gap-2 opacity-50 cursor-not-allowed">
+                        <div className="w-8 h-8 rounded bg-gradient-to-b from-charcoal to-white shrink-0" />
                         <span className="text-sm text-text-secondary">System (Coming Soon)</span>
                       </button>
                     </div>

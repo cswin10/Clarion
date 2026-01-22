@@ -27,8 +27,8 @@ export function PageWrapper({
       <Sidebar />
       <main
         className={`
-          ml-[280px] min-h-screen
-          ${fullWidth ? 'p-0' : 'p-8'}
+          lg:ml-[280px] min-h-screen
+          ${fullWidth ? 'p-0' : 'p-4 pt-16 sm:p-6 sm:pt-16 lg:p-8 lg:pt-8'}
         `}
       >
         <div className={fullWidth ? '' : 'max-w-7xl mx-auto'}>

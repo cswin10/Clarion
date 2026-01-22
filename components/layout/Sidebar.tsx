@@ -1,8 +1,9 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FolderKanban, Settings, LogOut, User } from 'lucide-react';
+import { FolderKanban, GitCompareArrows, Settings, LogOut, User, Menu, X } from 'lucide-react';
 import { useApp } from '@/lib/store';
 
 interface NavItem {
@@ -19,6 +20,11 @@ const navItems: NavItem[] = [
     icon: <FolderKanban className="w-5 h-5" />,
   },
   {
+    label: 'Compare',
+    href: '/compare',
+    icon: <GitCompareArrows className="w-5 h-5" />,
+  },
+  {
     label: 'Settings',
     href: '/settings',
     icon: <Settings className="w-5 h-5" />,
@@ -28,11 +34,29 @@ const navItems: NavItem[] = [
 export function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useApp();
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  return (
-    <aside className="fixed left-0 top-0 h-screen w-[280px] bg-charcoal border-r border-slate/20 flex flex-col z-40">
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileOpen(false);
+  }, [pathname]);
+
+  // Prevent scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileOpen]);
+
+  const sidebarContent = (
+    <>
       {/* Logo */}
-      <div className="p-6">
+      <div className="p-6 flex items-center justify-between">
         <Link href="/dashboard" className="flex items-center gap-2">
           <div className="relative">
             <span className="text-2xl font-bold text-text-primary tracking-heading">
@@ -41,6 +65,13 @@ export function Sidebar() {
             <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-gold to-transparent" />
           </div>
         </Link>
+        {/* Mobile close button */}
+        <button
+          onClick={() => setIsMobileOpen(false)}
+          className="lg:hidden p-2 rounded-button hover:bg-navy text-text-secondary"
+        >
+          <X className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Slanted divider */}
@@ -120,7 +151,43 @@ export function Sidebar() {
           </button>
         </div>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile hamburger button */}
+      <button
+        onClick={() => setIsMobileOpen(true)}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-button bg-charcoal border border-slate/20 text-text-primary"
+      >
+        <Menu className="w-6 h-6" />
+      </button>
+
+      {/* Mobile overlay */}
+      {isMobileOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      {/* Desktop sidebar - always visible */}
+      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-[280px] bg-charcoal border-r border-slate/20 flex-col z-40">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile sidebar - slide in */}
+      <aside
+        className={`
+          lg:hidden fixed left-0 top-0 h-screen w-[280px] bg-charcoal border-r border-slate/20 flex flex-col z-50
+          transform transition-transform duration-300 ease-in-out
+          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
+        `}
+      >
+        {sidebarContent}
+      </aside>
+    </>
   );
 }
 

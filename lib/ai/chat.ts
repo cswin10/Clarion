@@ -1,6 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { ProjectInputs } from '../types';
-import { ScenarioResponse } from './generateScenarios';
+import { ProjectInputs, Scenario } from '../types';
 
 const client = new Anthropic();
 
@@ -19,46 +18,63 @@ export interface ChatContext {
     yearBuilt: number;
   };
   inputs: ProjectInputs;
-  scenarios: ScenarioResponse;
+  scenarios: {
+    scenarios: {
+      A: Scenario;
+      B: Scenario;
+      C: Scenario;
+    };
+    recommendation: string;
+    recommendationRationale: string;
+  };
+}
+
+// Helper to safely get capital value (handles both formats)
+function getCapital(scenario: Scenario): number {
+  return scenario.capitalRequired || 0;
 }
 
 export async function chat(
   messages: ChatMessage[],
   context: ChatContext
 ): Promise<string> {
+  const scenarioA = context.scenarios?.scenarios?.A;
+  const scenarioB = context.scenarios?.scenarios?.B;
+  const scenarioC = context.scenarios?.scenarios?.C;
+
   const systemPrompt = `You are Clarion's AI assistant, helping users understand their property feasibility analysis. You have complete context about their project.
 
 PROJECT CONTEXT:
-Property: ${context.property.name}
-Address: ${context.property.address}, ${context.property.city}
-Type: ${context.property.propertyType}
-Size: ${context.property.size} sqm
-Year Built: ${context.property.yearBuilt}
+Property: ${context.property?.name || 'Unknown'}
+Address: ${context.property?.address || 'Unknown'}, ${context.property?.city || 'Unknown'}
+Type: ${context.property?.propertyType || 'Unknown'}
+Size: ${context.property?.size || 0} sqm
+Year Built: ${context.property?.yearBuilt || 'Unknown'}
 
 KEY INPUTS:
-- Building Condition: ${context.inputs.condition?.overallStructuralCondition || 'N/A'}
-- Current EPC: ${context.inputs.esg?.currentEPCRating || 'N/A'}
-- Current Rent: £${context.inputs.costs?.currentAnnualRent?.toLocaleString() || 'N/A'}/year
-- Property Value: £${context.inputs.costs?.currentPropertyValueEstimate?.toLocaleString() || 'N/A'}
+- Building Condition: ${context.inputs?.condition?.overallStructuralCondition || 'N/A'}
+- Current EPC: ${context.inputs?.esg?.currentEPCRating || 'N/A'}
+- Current Rent: £${context.inputs?.costs?.currentAnnualRent?.toLocaleString() || 'N/A'}/year
+- Property Value: £${context.inputs?.costs?.currentPropertyValueEstimate?.toLocaleString() || 'N/A'}
 
 SCENARIOS:
-Scenario A (${context.scenarios.scenarios.A.name}):
-- Capital: £${context.scenarios.scenarios.A.capitalExpenditure.toLocaleString()}
-- IRR: ${context.scenarios.scenarios.A.irr}%
-- Risk: ${context.scenarios.scenarios.A.riskLevel}
+Scenario A (${scenarioA?.name || 'Status Quo'}):
+- Capital: £${getCapital(scenarioA).toLocaleString()}
+- IRR: ${scenarioA?.irr || 0}%
+- Risk: ${scenarioA?.riskRating || 'Unknown'}
 
-Scenario B (${context.scenarios.scenarios.B.name}):
-- Capital: £${context.scenarios.scenarios.B.capitalExpenditure.toLocaleString()}
-- IRR: ${context.scenarios.scenarios.B.irr}%
-- Risk: ${context.scenarios.scenarios.B.riskLevel}
+Scenario B (${scenarioB?.name || 'Value-Add'}):
+- Capital: £${getCapital(scenarioB).toLocaleString()}
+- IRR: ${scenarioB?.irr || 0}%
+- Risk: ${scenarioB?.riskRating || 'Unknown'}
 
-Scenario C (${context.scenarios.scenarios.C.name}):
-- Capital: £${context.scenarios.scenarios.C.capitalExpenditure.toLocaleString()}
-- IRR: ${context.scenarios.scenarios.C.irr}%
-- Risk: ${context.scenarios.scenarios.C.riskLevel}
+Scenario C (${scenarioC?.name || 'Maximum Value'}):
+- Capital: £${getCapital(scenarioC).toLocaleString()}
+- IRR: ${scenarioC?.irr || 0}%
+- Risk: ${scenarioC?.riskRating || 'Unknown'}
 
-RECOMMENDATION: Scenario ${context.scenarios.recommendation}
-Rationale: ${context.scenarios.recommendationRationale}
+RECOMMENDATION: Scenario ${context.scenarios?.recommendation || 'B'}
+Rationale: ${context.scenarios?.recommendationRationale || 'Based on risk-return analysis'}
 
 You can:
 1. Explain any aspect of the analysis

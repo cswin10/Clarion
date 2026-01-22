@@ -21,6 +21,7 @@ import { ScenarioCard } from '@/components/results/ScenarioCard';
 import { Scorecard } from '@/components/results/Scorecard';
 import { RecommendationPanel, RiskFlags } from '@/components/results/RecommendationPanel';
 import { ChatPanel } from '@/components/results/ChatPanel';
+import { ProjectInsights } from '@/components/results/ProjectInsights';
 import { AILoadingOverlay } from '@/components/ui/AILoadingState';
 import { useApp } from '@/lib/store';
 import { ScenarioResults, Scenario, RiskFlag, CashFlowData, RiskReturnData } from '@/lib/types';
@@ -362,9 +363,9 @@ export default function ResultsPage() {
 
   return (
     <PageWrapper fullWidth>
-      <div className="max-w-7xl mx-auto px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         {/* Header */}
-        <div className="flex items-start justify-between mb-8">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6 lg:mb-8">
           <div>
             <Link
               href={`/project/${projectId}`}
@@ -374,28 +375,28 @@ export default function ResultsPage() {
               <span>Back to Project</span>
             </Link>
 
-            <div className="flex items-center gap-4 mb-2">
-              <div className="w-12 h-12 rounded-card bg-gold/10 flex items-center justify-center">
-                <Building2 className="w-6 h-6 text-gold" />
+            <div className="flex items-center gap-3 sm:gap-4 mb-2">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-card bg-gold/10 flex items-center justify-center shrink-0">
+                <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-gold" />
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-text-primary tracking-heading">
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-text-primary tracking-heading truncate">
                   {project.name}
                 </h1>
                 <div className="flex items-center gap-3 mt-1">
-                  <div className="flex items-center gap-1 text-text-secondary text-sm">
-                    <MapPin className="w-4 h-4" />
-                    {project.address}, {project.city}
+                  <div className="flex items-center gap-1 text-text-secondary text-xs sm:text-sm">
+                    <MapPin className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" />
+                    <span className="truncate">{project.address}, {project.city}</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <Badge variant="success" size="md">
               <CheckCircle className="w-4 h-4 mr-1" />
-              Analysis Complete
+              <span className="hidden sm:inline">Analysis </span>Complete
             </Badge>
             <Button
               variant="ghost"
@@ -409,11 +410,13 @@ export default function ResultsPage() {
                 }
               }}
             >
-              Regenerate
+              <span className="hidden sm:inline">Regenerate</span>
+              <span className="sm:hidden">Regen</span>
             </Button>
             <Link href={`/project/${projectId}`}>
-              <Button variant="ghost" leftIcon={<Edit className="w-4 h-4" />}>
-                Edit Inputs
+              <Button variant="ghost" size="sm" leftIcon={<Edit className="w-4 h-4" />}>
+                <span className="hidden sm:inline">Edit Inputs</span>
+                <span className="sm:hidden">Edit</span>
               </Button>
             </Link>
             <PDFDownloadButton project={project} />
@@ -421,7 +424,7 @@ export default function ResultsPage() {
         </div>
 
         {/* Meta Info */}
-        <div className="flex items-center gap-4 text-sm text-text-secondary mb-8">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-text-secondary mb-6 lg:mb-8">
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4" />
             <span>Generated on {formatDate(results.generatedAt)}</span>
@@ -462,19 +465,19 @@ export default function ResultsPage() {
         </section>
 
         {/* Detailed Scorecard */}
-        <section className="mb-12">
-          <h2 className="text-lg font-semibold text-text-primary mb-4">
+        <section className="mb-8 lg:mb-12">
+          <h2 className="text-base sm:text-lg font-semibold text-text-primary mb-4">
             Detailed Scorecard
           </h2>
           <Scorecard results={results} />
         </section>
 
         {/* Financial Charts */}
-        <section className="mb-12">
-          <h2 className="text-lg font-semibold text-text-primary mb-4">
+        <section className="mb-8 lg:mb-12">
+          <h2 className="text-base sm:text-lg font-semibold text-text-primary mb-4">
             Financial Analysis
           </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             <CashFlowChart
               data={results.cashFlowData}
               recommendedScenario={results.recommendedScenario}
@@ -487,26 +490,31 @@ export default function ResultsPage() {
         </section>
 
         {/* Risk Flags */}
-        <section className="mb-12">
+        <section className="mb-8 lg:mb-12">
           <RiskFlags flags={results.riskFlags} />
         </section>
 
+        {/* Project Insights */}
+        <section className="mb-8 lg:mb-12">
+          <ProjectInsights project={project} results={results} />
+        </section>
+
         {/* AI Chat Assistant */}
-        <section className="mb-12">
-          <h2 className="text-lg font-semibold text-text-primary mb-4">
+        <section className="mb-8 lg:mb-12">
+          <h2 className="text-base sm:text-lg font-semibold text-text-primary mb-4">
             Ask Questions
           </h2>
           <ChatPanel context={chatContext} />
         </section>
 
         {/* Export Section */}
-        <section className="border-t border-slate/20 pt-8">
-          <div className="flex items-center justify-between">
+        <section className="border-t border-slate/20 pt-6 sm:pt-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h3 className="text-lg font-semibold text-text-primary">
+              <h3 className="text-base sm:text-lg font-semibold text-text-primary">
                 Export Report
               </h3>
-              <p className="text-text-secondary text-sm mt-1">
+              <p className="text-text-secondary text-xs sm:text-sm mt-1">
                 Download a comprehensive PDF report for stakeholders and investors.
               </p>
             </div>
