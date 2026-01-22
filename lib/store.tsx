@@ -251,6 +251,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [state.projects]
   );
 
+  const setProjectResults = useCallback(
+    (projectId: string, results: ScenarioResults) => {
+      setState((prev) => ({
+        ...prev,
+        projects: prev.projects.map((p) =>
+          p.id === projectId
+            ? { ...p, results, updatedAt: new Date().toISOString() }
+            : p
+        ),
+        currentProject:
+          prev.currentProject?.id === projectId
+            ? { ...prev.currentProject, results, updatedAt: new Date().toISOString() }
+            : prev.currentProject,
+      }));
+    },
+    []
+  );
+
   const contextValue: AppContextType = {
     ...state,
     login,
@@ -261,6 +279,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setCurrentProject,
     updateProjectInputs,
     generateResults,
+    setProjectResults,
   };
 
   return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;
