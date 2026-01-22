@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FolderKanban, Settings, LogOut, User, Menu, X } from 'lucide-react';
+import { FolderKanban, GitCompareArrows, Settings, LogOut, User, Menu, X } from 'lucide-react';
 import { useApp } from '@/lib/store';
 
 interface NavItem {
@@ -18,6 +18,11 @@ const navItems: NavItem[] = [
     label: 'Projects',
     href: '/dashboard',
     icon: <FolderKanban className="w-5 h-5" />,
+  },
+  {
+    label: 'Compare',
+    href: '/compare',
+    icon: <GitCompareArrows className="w-5 h-5" />,
   },
   {
     label: 'Settings',

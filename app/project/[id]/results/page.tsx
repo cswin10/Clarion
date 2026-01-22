@@ -21,6 +21,7 @@ import { ScenarioCard } from '@/components/results/ScenarioCard';
 import { Scorecard } from '@/components/results/Scorecard';
 import { RecommendationPanel, RiskFlags } from '@/components/results/RecommendationPanel';
 import { ChatPanel } from '@/components/results/ChatPanel';
+import { ProjectInsights } from '@/components/results/ProjectInsights';
 import { AILoadingOverlay } from '@/components/ui/AILoadingState';
 import { useApp } from '@/lib/store';
 import { ScenarioResults, Scenario, RiskFlag, CashFlowData, RiskReturnData } from '@/lib/types';
@@ -491,6 +492,11 @@ export default function ResultsPage() {
         {/* Risk Flags */}
         <section className="mb-8 lg:mb-12">
           <RiskFlags flags={results.riskFlags} />
+        </section>
+
+        {/* Project Insights */}
+        <section className="mb-8 lg:mb-12">
+          <ProjectInsights project={project} results={results} />
         </section>
 
         {/* AI Chat Assistant */}

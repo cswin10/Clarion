@@ -520,6 +520,100 @@ export function ReportDocument({ project }: Props) {
         </View>
       </Page>
 
+      {/* ESG Roadmap */}
+      <Page size="A4" style={styles.page}>
+        <View style={styles.header}>
+          <Text style={styles.headerLogo}>Clarion</Text>
+          <Text style={styles.headerPage}>ESG Roadmap</Text>
+        </View>
+
+        <Text style={styles.sectionTitle}>ESG Compliance Roadmap</Text>
+
+        <Text style={styles.text}>
+          This section outlines the pathway to achieving ESG compliance and improved sustainability performance under the recommended scenario.
+        </Text>
+
+        <Text style={styles.subsectionTitle}>EPC Improvement Pathway</Text>
+        <View style={styles.table}>
+          <View style={styles.tableHeader}>
+            <Text style={[styles.tableHeaderCell, { flex: 1.5, textAlign: 'left' }]}>
+              Milestone
+            </Text>
+            <Text style={styles.tableHeaderCell}>Current</Text>
+            <Text style={styles.tableHeaderCell}>Target</Text>
+            <Text style={styles.tableHeaderCell}>Scenario A</Text>
+            <Text style={styles.tableHeaderCell}>Scenario B</Text>
+            <Text style={styles.tableHeaderCell}>Scenario C</Text>
+          </View>
+          <View style={styles.tableRow}>
+            <Text style={styles.tableCellLabel}>EPC Rating</Text>
+            <Text style={styles.tableCell}>{project.inputs.esg?.currentEPCRating || '-'}</Text>
+            <Text style={styles.tableCell}>{project.inputs.esg?.targetEPCRating || '-'}</Text>
+            <Text style={styles.tableCell}>{results.scenarios.A.epcRatingAchieved}</Text>
+            <Text style={styles.tableCell}>{results.scenarios.B.epcRatingAchieved}</Text>
+            <Text style={styles.tableCell}>{results.scenarios.C.epcRatingAchieved}</Text>
+          </View>
+          <View style={[styles.tableRow, styles.tableRowAlt]}>
+            <Text style={styles.tableCellLabel}>MEES Compliant</Text>
+            <Text style={styles.tableCell}>{project.inputs.esg?.meesCompliant ? 'Yes' : 'No'}</Text>
+            <Text style={styles.tableCell}>Yes</Text>
+            <Text style={styles.tableCell}>{results.scenarios.A.meesCompliant ? 'Yes' : 'No'}</Text>
+            <Text style={styles.tableCell}>{results.scenarios.B.meesCompliant ? 'Yes' : 'No'}</Text>
+            <Text style={styles.tableCell}>{results.scenarios.C.meesCompliant ? 'Yes' : 'No'}</Text>
+          </View>
+          <View style={styles.tableRow}>
+            <Text style={styles.tableCellLabel}>ESG Score</Text>
+            <Text style={styles.tableCell}>-</Text>
+            <Text style={styles.tableCell}>{project.inputs.esg?.targetCertification || '-'}</Text>
+            <Text style={styles.tableCell}>{results.scenarios.A.esgScore}</Text>
+            <Text style={styles.tableCell}>{results.scenarios.B.esgScore}</Text>
+            <Text style={styles.tableCell}>{results.scenarios.C.esgScore}</Text>
+          </View>
+        </View>
+
+        <Text style={styles.subsectionTitle}>Regulatory Timeline</Text>
+        <View style={styles.riskItem}>
+          <View style={[styles.riskBullet, styles.riskHigh]} />
+          <Text style={[styles.text, { flex: 1, marginBottom: 0 }]}>
+            MEES 2025: Minimum EPC E required for existing commercial leases
+          </Text>
+        </View>
+        <View style={styles.riskItem}>
+          <View style={[styles.riskBullet, styles.riskMedium]} />
+          <Text style={[styles.text, { flex: 1, marginBottom: 0 }]}>
+            MEES 2027: Minimum EPC C required for new commercial leases (proposed)
+          </Text>
+        </View>
+        <View style={styles.riskItem}>
+          <View style={[styles.riskBullet, styles.riskLow]} />
+          <Text style={[styles.text, { flex: 1, marginBottom: 0 }]}>
+            MEES 2030: Minimum EPC B required for all commercial properties (proposed)
+          </Text>
+        </View>
+
+        <Text style={styles.subsectionTitle}>Recommended Actions</Text>
+        <Text style={styles.text}>
+          Based on the recommended Scenario {results.recommendedScenario}, the following ESG-related actions are advised:
+        </Text>
+        <Text style={styles.text}>
+          1. Conduct detailed energy audit to identify quick wins and major interventions required to achieve target EPC rating.
+        </Text>
+        <Text style={styles.text}>
+          2. Prioritise building fabric improvements (insulation, glazing) before mechanical system upgrades for maximum efficiency gains.
+        </Text>
+        <Text style={styles.text}>
+          3. Consider on-site renewable energy generation to reduce operational carbon and improve marketability.
+        </Text>
+        <Text style={styles.text}>
+          4. Implement smart building controls and sub-metering to enable ongoing energy management and reporting.
+        </Text>
+
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Clarion | Confidential</Text>
+          <Text style={styles.footerText}>Page 5</Text>
+        </View>
+      </Page>
+
       {/* Appendix - Input Data */}
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
@@ -630,7 +724,7 @@ export function ReportDocument({ project }: Props) {
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>Clarion | Confidential</Text>
-          <Text style={styles.footerText}>Page 5</Text>
+          <Text style={styles.footerText}>Page 6</Text>
         </View>
       </Page>
     </Document>
