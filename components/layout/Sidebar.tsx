@@ -22,7 +22,6 @@ const navItems: NavItem[] = [
     label: 'Settings',
     href: '/settings',
     icon: <Settings className="w-5 h-5" />,
-    disabled: true,
   },
 ];
 
