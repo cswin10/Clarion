@@ -1,28 +1,20 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/store';
-import {
-  ArrowRight,
-  Building2,
-  BarChart3,
-  FileText,
-  Shield,
-  Sparkles,
-  TrendingUp,
-  Zap,
-  Check,
-  ChevronDown,
-  Play,
-} from 'lucide-react';
+import { ArrowUpRight, ArrowDown } from 'lucide-react';
 
 export default function LandingPage() {
   const { isAuthenticated, isLoading } = useApp();
   const router = useRouter();
-  const [scrollY, setScrollY] = useState(0);
-  const heroRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
@@ -31,267 +23,224 @@ export default function LandingPage() {
   }, [isAuthenticated, isLoading, router]);
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const interval = setInterval(() => {
+      setActiveTestimonial((prev) => (prev + 1) % 3);
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-navy flex items-center justify-center">
-        <div className="animate-pulse text-accent text-xl">Loading...</div>
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#c9a66b] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-surface-primary overflow-hidden">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-           style={{ backgroundColor: scrollY > 50 ? 'rgba(8, 12, 21, 0.95)' : 'transparent' }}>
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-accent-warm flex items-center justify-center">
-                <Building2 className="w-5 h-5 text-surface-primary" />
-              </div>
-              <span className="text-2xl font-bold tracking-tight text-white">Clarion</span>
-            </div>
-            <div className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-sm text-neutral-400 hover:text-white transition-colors">Features</a>
-              <a href="#how-it-works" className="text-sm text-neutral-400 hover:text-white transition-colors">How it Works</a>
-              <a href="#benefits" className="text-sm text-neutral-400 hover:text-white transition-colors">Benefits</a>
-            </div>
-            <div className="flex items-center gap-4">
-              <Link
-                href="/login"
-                className="hidden sm:block text-sm font-medium text-white hover:text-accent transition-colors"
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/login"
-                className="group inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-accent to-accent-warm text-surface-primary font-semibold text-sm rounded-full hover:shadow-accent transition-all duration-300"
-              >
-                Get Started
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            </div>
-          </div>
+    <div className="min-h-screen bg-[#0a0a0a] text-[#fafafa] overflow-x-hidden">
+      {/* Minimal Nav */}
+      <nav className="fixed top-0 left-0 right-0 z-50 mix-blend-difference">
+        <div className="flex justify-between items-center px-6 md:px-12 py-6">
+          <span className="text-xl tracking-[0.2em] font-light">CLARION</span>
+          <Link
+            href="/login"
+            className="text-sm tracking-wider hover:opacity-60 transition-opacity"
+          >
+            ENTER
+          </Link>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center justify-center pt-20">
-        {/* Animated Background */}
-        <div className="absolute inset-0 overflow-hidden">
-          {/* Gradient orbs */}
-          <div
-            className="absolute w-[800px] h-[800px] rounded-full opacity-20"
-            style={{
-              background: 'radial-gradient(circle, rgba(200, 170, 110, 0.4) 0%, transparent 70%)',
-              top: '-20%',
-              right: '-10%',
-              transform: `translateY(${scrollY * 0.1}px)`,
-            }}
-          />
-          <div
-            className="absolute w-[600px] h-[600px] rounded-full opacity-15"
-            style={{
-              background: 'radial-gradient(circle, rgba(139, 115, 85, 0.5) 0%, transparent 70%)',
-              bottom: '-10%',
-              left: '-5%',
-              transform: `translateY(${-scrollY * 0.05}px)`,
-            }}
-          />
+      {/* Hero - Full viewport with dramatic typography */}
+      <section className="relative h-screen flex flex-col justify-end pb-24 px-6 md:px-12">
+        {/* Architectural line element */}
+        <div className="absolute top-0 right-12 md:right-24 w-px h-[40vh] bg-gradient-to-b from-transparent via-[#c9a66b]/40 to-transparent" />
+        <div className="absolute bottom-48 left-12 md:left-24 w-[20vw] h-px bg-gradient-to-r from-[#c9a66b]/40 to-transparent" />
 
-          {/* Grid pattern */}
-          <div
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: `
-                linear-gradient(rgba(200, 170, 110, 0.5) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(200, 170, 110, 0.5) 1px, transparent 1px)
-              `,
-              backgroundSize: '60px 60px',
-            }}
-          />
-
-          {/* Floating elements */}
-          <div className="absolute top-1/4 left-[15%] w-2 h-2 rounded-full bg-accent/40 animate-pulse" />
-          <div className="absolute top-1/3 right-[20%] w-3 h-3 rounded-full bg-accent-warm/30 animate-pulse" style={{ animationDelay: '1s' }} />
-          <div className="absolute bottom-1/3 left-[25%] w-2 h-2 rounded-full bg-accent/30 animate-pulse" style={{ animationDelay: '2s' }} />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface-secondary/80 border border-accent/20 mb-8 backdrop-blur-sm">
-            <Sparkles className="w-4 h-4 text-accent" />
-            <span className="text-sm text-neutral-300">AI-Powered Real Estate Intelligence</span>
-          </div>
-
-          {/* Main headline */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight mb-6 leading-[1.1]">
-            Make Confident
-            <span className="block mt-2 bg-gradient-to-r from-accent via-accent-warm to-accent bg-clip-text text-transparent">
-              Property Decisions
-            </span>
+        {/* Main headline */}
+        <div className={`transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <h1 className="text-[12vw] md:text-[8vw] leading-[0.85] font-extralight tracking-tight">
+            Clear
+            <br />
+            <span className="italic font-normal text-[#c9a66b]">Decisions</span>
           </h1>
+        </div>
 
-          {/* Subheadline */}
-          <p className="max-w-2xl mx-auto text-lg sm:text-xl text-neutral-400 mb-10 leading-relaxed">
-            Transform complex commercial real estate data into clear, actionable
-            investment insights with AI-powered feasibility analysis.
+        {/* Subtext positioned absolutely */}
+        <div className={`absolute right-6 md:right-12 bottom-24 max-w-xs text-right transition-all duration-1000 delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <p className="text-sm leading-relaxed text-[#888] font-light">
+            AI-powered feasibility analysis for commercial real estate.
+            Transform complexity into conviction.
           </p>
+        </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-            <Link
-              href="/login"
-              className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-accent to-accent-warm text-surface-primary font-semibold rounded-full hover:shadow-accent transition-all duration-300 text-lg"
-            >
-              Start Analysing
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <button className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 border border-neutral-700 text-white font-medium rounded-full hover:border-accent/50 hover:bg-surface-secondary transition-all duration-300 text-lg">
-              <Play className="w-5 h-5 text-accent" />
-              Watch Demo
-            </button>
-          </div>
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[#444]">
+          <ArrowDown className="w-4 h-4 animate-bounce" />
+        </div>
+      </section>
 
-          {/* Trust indicators */}
-          <div className="flex flex-wrap items-center justify-center gap-8 text-neutral-500 text-sm">
-            <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-accent" />
-              <span>Enterprise Security</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-accent" />
-              <span>Real-Time Analysis</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <FileText className="w-4 h-4 text-accent" />
-              <span>Investor-Ready Reports</span>
-            </div>
-          </div>
-
-          {/* Scroll indicator */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-neutral-500">
-            <span className="text-xs uppercase tracking-wider">Explore</span>
-            <ChevronDown className="w-5 h-5 animate-bounce" />
+      {/* Statement section - Large quote style */}
+      <section className="min-h-screen flex items-center px-6 md:px-12 py-32 relative">
+        <div className="absolute top-32 right-12 text-[20vw] font-extralight text-[#111] select-none pointer-events-none">
+          01
+        </div>
+        <div className="max-w-4xl">
+          <p className="text-2xl md:text-4xl lg:text-5xl font-extralight leading-relaxed">
+            We built Clarion because property decisions
+            <span className="text-[#c9a66b]"> shouldn&apos;t take weeks</span>.
+            Five forms. Three scenarios. One clear recommendation.
+          </p>
+          <div className="mt-16 flex items-center gap-8">
+            <div className="w-24 h-px bg-[#333]" />
+            <span className="text-sm text-[#666] tracking-wider">THE PREMISE</span>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="relative py-32 bg-surface-secondary">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          {/* Section header */}
-          <div className="text-center mb-20">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium mb-4">
-              Powerful Features
-            </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-              Everything You Need to Decide
-            </h2>
-            <p className="max-w-2xl mx-auto text-neutral-400 text-lg">
-              Comprehensive tools designed for real estate professionals who demand clarity and precision.
+      {/* Capabilities - Horizontal scroll feel with staggered layout */}
+      <section className="py-32 px-6 md:px-12 relative">
+        <div className="absolute top-32 right-12 text-[20vw] font-extralight text-[#111] select-none pointer-events-none">
+          02
+        </div>
+
+        <div className="mb-24">
+          <span className="text-sm text-[#666] tracking-wider">CAPABILITIES</span>
+        </div>
+
+        <div className="grid md:grid-cols-12 gap-y-24 md:gap-y-32">
+          {/* Item 1 - spans left */}
+          <div className="md:col-span-5 md:col-start-1">
+            <span className="text-[#c9a66b] text-sm tracking-wider mb-4 block">01</span>
+            <h3 className="text-2xl md:text-3xl font-light mb-6">Structured Assessment</h3>
+            <p className="text-[#777] font-light leading-relaxed">
+              Building condition. Planning context. MEP systems. Financial parameters. ESG compliance.
+              Five focused inputs that capture everything material to the decision.
             </p>
           </div>
 
-          {/* Feature cards */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Item 2 - spans right */}
+          <div className="md:col-span-5 md:col-start-7">
+            <span className="text-[#c9a66b] text-sm tracking-wider mb-4 block">02</span>
+            <h3 className="text-2xl md:text-3xl font-light mb-6">Scenario Intelligence</h3>
+            <p className="text-[#777] font-light leading-relaxed">
+              Hold. Refurbish. Redevelop. Each scenario modelled with IRR, yield, payback,
+              and NPV projections. AI-generated narratives explain the trade-offs.
+            </p>
+          </div>
+
+          {/* Item 3 - spans left */}
+          <div className="md:col-span-5 md:col-start-2">
+            <span className="text-[#c9a66b] text-sm tracking-wider mb-4 block">03</span>
+            <h3 className="text-2xl md:text-3xl font-light mb-6">Risk Quantification</h3>
+            <p className="text-[#777] font-light leading-relaxed">
+              MEES deadlines. Market exposure. Execution complexity. Every material risk
+              identified, categorised, and factored into the recommendation.
+            </p>
+          </div>
+
+          {/* Item 4 - spans right */}
+          <div className="md:col-span-5 md:col-start-8">
+            <span className="text-[#c9a66b] text-sm tracking-wider mb-4 block">04</span>
+            <h3 className="text-2xl md:text-3xl font-light mb-6">Investor Documentation</h3>
+            <p className="text-[#777] font-light leading-relaxed">
+              Professional PDF reports ready for board papers and investment committees.
+              Complete with visualisations, comparisons, and ESG roadmaps.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Numbers section - Editorial grid */}
+      <section className="py-32 px-6 md:px-12 border-t border-[#1a1a1a]">
+        <div className="grid md:grid-cols-4 gap-12 md:gap-6">
+          {[
+            { value: '80%', label: 'Faster than traditional analysis' },
+            { value: '5', label: 'Structured input forms' },
+            { value: '3', label: 'Scenarios per assessment' },
+            { value: '1', label: 'Clear recommendation' },
+          ].map((stat, i) => (
+            <div key={i} className="border-l border-[#222] pl-6">
+              <span className="text-5xl md:text-6xl font-extralight text-[#c9a66b]">{stat.value}</span>
+              <p className="mt-4 text-sm text-[#666] font-light">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Testimonial - Minimal, rotating */}
+      <section className="py-32 px-6 md:px-12 relative min-h-[70vh] flex items-center">
+        <div className="absolute top-32 right-12 text-[20vw] font-extralight text-[#111] select-none pointer-events-none">
+          03
+        </div>
+
+        <div className="max-w-3xl">
+          <div className="mb-12">
+            <span className="text-sm text-[#666] tracking-wider">PERSPECTIVES</span>
+          </div>
+
+          <div className="relative h-48 md:h-40">
             {[
-              {
-                icon: Building2,
-                title: 'Building Assessment',
-                description: 'Evaluate structural condition, MEP systems, and compliance status with guided assessments.',
-                gradient: 'from-blue-500/20 to-cyan-500/20',
-              },
-              {
-                icon: BarChart3,
-                title: 'Scenario Modelling',
-                description: 'Compare Hold, Refurbish, and Redevelop scenarios with automated financial projections.',
-                gradient: 'from-accent/20 to-accent-warm/20',
-              },
-              {
-                icon: Sparkles,
-                title: 'AI Recommendations',
-                description: 'Get intelligent insights and recommendations powered by advanced AI analysis.',
-                gradient: 'from-purple-500/20 to-pink-500/20',
-              },
-              {
-                icon: TrendingUp,
-                title: 'Financial Metrics',
-                description: 'Calculate IRR, Net Yield, Payback Period, and NPV with industry-standard models.',
-                gradient: 'from-green-500/20 to-emerald-500/20',
-              },
-              {
-                icon: Shield,
-                title: 'Risk Assessment',
-                description: 'Identify and quantify regulatory, market, and operational risks automatically.',
-                gradient: 'from-orange-500/20 to-red-500/20',
-              },
-              {
-                icon: FileText,
-                title: 'Professional Reports',
-                description: 'Generate investor-ready PDF reports with complete analysis and visualisations.',
-                gradient: 'from-indigo-500/20 to-violet-500/20',
-              },
-            ].map((feature, index) => (
+              { quote: "Replaced our three-week feasibility process with a three-hour workflow.", role: "Head of Acquisitions, Private Equity" },
+              { quote: "The scenario comparisons finally gave our IC the clarity they needed.", role: "Asset Manager, Family Office" },
+              { quote: "ESG compliance mapping alone justified the entire platform.", role: "Sustainability Director, REIT" },
+            ].map((testimonial, i) => (
               <div
-                key={index}
-                className="group relative p-8 rounded-2xl bg-surface-primary border border-neutral-800 hover:border-accent/30 transition-all duration-500"
+                key={i}
+                className={`absolute inset-0 transition-all duration-700 ${
+                  activeTestimonial === i
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-4 pointer-events-none'
+                }`}
               >
-                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                <div className="relative">
-                  <div className="w-14 h-14 rounded-xl bg-surface-secondary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <feature.icon className="w-7 h-7 text-accent" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
-                  <p className="text-neutral-400 leading-relaxed">{feature.description}</p>
-                </div>
+                <p className="text-xl md:text-2xl font-light leading-relaxed mb-8">
+                  &ldquo;{testimonial.quote}&rdquo;
+                </p>
+                <span className="text-sm text-[#666]">{testimonial.role}</span>
               </div>
+            ))}
+          </div>
+
+          {/* Dots */}
+          <div className="flex gap-3 mt-12">
+            {[0, 1, 2].map((i) => (
+              <button
+                key={i}
+                onClick={() => setActiveTestimonial(i)}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  activeTestimonial === i ? 'bg-[#c9a66b] w-8' : 'bg-[#333]'
+                }`}
+              />
             ))}
           </div>
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section id="how-it-works" className="relative py-32 bg-surface-primary overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-accent/5 blur-3xl" />
-
-        <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium mb-4">
-              Simple Process
-            </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-              From Data to Decision
+      {/* Process - Timeline style */}
+      <section className="py-32 px-6 md:px-12 border-t border-[#1a1a1a]">
+        <div className="grid md:grid-cols-2 gap-16 md:gap-24">
+          <div>
+            <span className="text-sm text-[#666] tracking-wider">THE PROCESS</span>
+            <h2 className="text-3xl md:text-4xl font-light mt-6 leading-tight">
+              From data to decision<br />in four stages
             </h2>
-            <p className="max-w-2xl mx-auto text-neutral-400 text-lg">
-              Four simple steps to transform your property assessment into actionable intelligence.
-            </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="space-y-12">
             {[
-              { step: '01', title: 'Input Details', description: 'Enter property details, building condition, and financial parameters.' },
-              { step: '02', title: 'AI Analysis', description: 'Our AI processes your data and generates multiple scenarios.' },
-              { step: '03', title: 'Review Results', description: 'Compare scenarios with detailed metrics and recommendations.' },
-              { step: '04', title: 'Export Report', description: 'Download investor-ready PDF reports for stakeholders.' },
-            ].map((item, index) => (
-              <div key={index} className="relative">
-                {index < 3 && (
-                  <div className="hidden lg:block absolute top-8 left-[60%] w-[80%] h-px bg-gradient-to-r from-accent/50 to-transparent" />
-                )}
-                <div className="relative text-center lg:text-left">
-                  <span className="inline-block text-6xl font-bold bg-gradient-to-b from-accent/40 to-transparent bg-clip-text text-transparent mb-4">
-                    {item.step}
-                  </span>
-                  <h3 className="text-xl font-semibold text-white mb-3">{item.title}</h3>
-                  <p className="text-neutral-400">{item.description}</p>
+              { stage: 'Input', desc: 'Complete five structured assessments covering all material factors.' },
+              { stage: 'Analysis', desc: 'AI processes inputs and generates three development scenarios.' },
+              { stage: 'Review', desc: 'Compare scenarios with detailed metrics, risks, and narratives.' },
+              { stage: 'Export', desc: 'Download investor-ready documentation for stakeholders.' },
+            ].map((step, i) => (
+              <div key={i} className="flex gap-6 group">
+                <div className="w-12 h-12 rounded-full border border-[#333] flex items-center justify-center text-sm text-[#666] group-hover:border-[#c9a66b] group-hover:text-[#c9a66b] transition-colors">
+                  {i + 1}
+                </div>
+                <div className="flex-1 pt-2">
+                  <h4 className="font-light text-lg mb-2">{step.stage}</h4>
+                  <p className="text-sm text-[#666] font-light">{step.desc}</p>
                 </div>
               </div>
             ))}
@@ -299,143 +248,42 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Benefits Section */}
-      <section id="benefits" className="relative py-32 bg-surface-secondary">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left content */}
-            <div>
-              <span className="inline-block px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium mb-4">
-                Why Clarion
-              </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-                Built for Real Estate Professionals
-              </h2>
-              <p className="text-neutral-400 text-lg mb-10">
-                Stop spending weeks on feasibility studies. Get the insights you need in hours, not days.
-              </p>
+      {/* CTA - Dramatic, minimal */}
+      <section className="py-48 px-6 md:px-12 text-center relative">
+        {/* Subtle corner accents */}
+        <div className="absolute top-24 left-12 w-16 h-px bg-[#c9a66b]/30" />
+        <div className="absolute top-24 left-12 w-px h-16 bg-[#c9a66b]/30" />
+        <div className="absolute bottom-24 right-12 w-16 h-px bg-[#c9a66b]/30" />
+        <div className="absolute bottom-24 right-12 w-px h-16 bg-[#c9a66b]/30" />
 
-              <div className="space-y-6">
-                {[
-                  'Reduce analysis time by up to 80%',
-                  'Generate consistent, professional reports',
-                  'Compare multiple scenarios instantly',
-                  'Make data-driven investment decisions',
-                  'Stay ahead of MEES and ESG compliance',
-                ].map((benefit, index) => (
-                  <div key={index} className="flex items-center gap-4">
-                    <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
-                      <Check className="w-4 h-4 text-accent" />
-                    </div>
-                    <span className="text-white">{benefit}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right visual */}
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-accent-warm/10 rounded-3xl blur-3xl" />
-              <div className="relative p-8 rounded-3xl bg-surface-primary border border-neutral-800">
-                {/* Mock dashboard preview */}
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between pb-4 border-b border-neutral-800">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                        <Building2 className="w-5 h-5 text-accent" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-white">125 City Road</p>
-                        <p className="text-sm text-neutral-500">Office - 5,200 sqm</p>
-                      </div>
-                    </div>
-                    <span className="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-sm font-medium">
-                      Proceed
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4">
-                    {[
-                      { label: 'IRR', value: '14.2%' },
-                      { label: 'Net Yield', value: '6.8%' },
-                      { label: 'Payback', value: '5.2 yrs' },
-                    ].map((metric, index) => (
-                      <div key={index} className="text-center p-4 rounded-xl bg-surface-secondary">
-                        <p className="text-2xl font-bold text-accent mb-1">{metric.value}</p>
-                        <p className="text-xs text-neutral-500 uppercase tracking-wider">{metric.label}</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="space-y-3">
-                    {['Light Refurb', 'Full Refurb', 'Redevelop'].map((scenario, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-surface-secondary">
-                        <span className="text-sm text-white">{scenario}</span>
-                        <div className="flex items-center gap-2">
-                          <div className="w-24 h-2 rounded-full bg-neutral-700 overflow-hidden">
-                            <div
-                              className="h-full rounded-full bg-gradient-to-r from-accent to-accent-warm"
-                              style={{ width: `${[65, 80, 45][index]}%` }}
-                            />
-                          </div>
-                          <span className="text-sm text-neutral-400">{[65, 80, 45][index]}%</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <h2 className="text-4xl md:text-6xl lg:text-7xl font-extralight mb-8">
+          Ready to begin?
+        </h2>
+        <p className="text-[#666] font-light mb-16 max-w-md mx-auto">
+          Start your first feasibility analysis today. No commitment required.
+        </p>
+        <Link
+          href="/login"
+          className="group inline-flex items-center gap-4 text-lg tracking-wider hover:text-[#c9a66b] transition-colors"
+        >
+          <span>START ANALYSIS</span>
+          <ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+        </Link>
       </section>
 
-      {/* CTA Section */}
-      <section className="relative py-32 bg-surface-primary overflow-hidden">
-        {/* Background effects */}
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] rounded-full bg-accent/10 blur-3xl" />
-        </div>
-
-        <div className="relative max-w-4xl mx-auto px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-            Ready to Transform Your
-            <span className="block mt-2 bg-gradient-to-r from-accent to-accent-warm bg-clip-text text-transparent">
-              Investment Analysis?
-            </span>
-          </h2>
-          <p className="text-neutral-400 text-lg mb-10 max-w-2xl mx-auto">
-            Join forward-thinking property professionals who are making smarter decisions with Clarion.
-          </p>
-          <Link
-            href="/login"
-            className="group inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-accent to-accent-warm text-surface-primary font-semibold rounded-full hover:shadow-accent transition-all duration-300 text-lg"
-          >
-            Get Started Free
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-12 bg-surface-secondary border-t border-neutral-800">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-accent-warm flex items-center justify-center">
-                <Building2 className="w-4 h-4 text-surface-primary" />
-              </div>
-              <span className="text-lg font-bold tracking-tight text-white">Clarion</span>
-            </div>
-            <p className="text-neutral-500 text-sm">
-              &copy; {new Date().getFullYear()} Clarion. Clear decisions for complex assets.
-            </p>
-            <div className="flex items-center gap-6">
-              <a href="#" className="text-sm text-neutral-400 hover:text-white transition-colors">Privacy</a>
-              <a href="#" className="text-sm text-neutral-400 hover:text-white transition-colors">Terms</a>
-              <a href="#" className="text-sm text-neutral-400 hover:text-white transition-colors">Contact</a>
-            </div>
+      {/* Footer - Minimal */}
+      <footer className="py-12 px-6 md:px-12 border-t border-[#1a1a1a]">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+          <div>
+            <span className="text-sm tracking-[0.2em] font-light">CLARION</span>
+            <p className="text-xs text-[#444] mt-2">Clear decisions for complex assets</p>
           </div>
+          <div className="flex gap-8 text-xs text-[#666]">
+            <a href="#" className="hover:text-[#fafafa] transition-colors">Privacy</a>
+            <a href="#" className="hover:text-[#fafafa] transition-colors">Terms</a>
+            <a href="#" className="hover:text-[#fafafa] transition-colors">Contact</a>
+          </div>
+          <span className="text-xs text-[#444]">&copy; {new Date().getFullYear()}</span>
         </div>
       </footer>
     </div>
