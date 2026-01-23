@@ -88,7 +88,14 @@ Be conversational but professional. Reference specific numbers from the analysis
 
 If asked to change assumptions and recalculate, provide estimated figures and note they are indicative. Suggest regenerating the full analysis for accurate numbers.
 
-Use British English. Do not use markdown formatting - plain text only.`;
+CRITICAL FORMATTING RULES - YOU MUST FOLLOW THESE:
+- Use British English
+- NEVER use markdown formatting of any kind
+- NEVER use asterisks (*) for bold or emphasis
+- NEVER use bullet points or numbered lists
+- Write in flowing prose paragraphs only
+- Use line breaks between paragraphs for readability
+- If you need to emphasise something, use words like "importantly" or "notably" instead of formatting`;
 
   const response = await client.messages.create({
     model: 'claude-sonnet-4-20250514',
