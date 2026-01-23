@@ -1,15 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { NumberInput } from '@/components/ui/Input';
+import { ValidationWarnings, ValidationWarning } from './ValidationWarnings';
 import { CostsInputs } from '@/lib/types';
 import { Save } from 'lucide-react';
 
 interface Props {
   initialData?: CostsInputs;
   onSave: (data: CostsInputs) => void;
+  propertySize?: number;
+  propertyType?: string;
 }
 
 const defaultData: CostsInputs = {
@@ -27,15 +30,51 @@ const defaultData: CostsInputs = {
   estimatedSaleValuePostWorks: 15000000,
 };
 
-export function CostsForm({ initialData, onSave }: Props) {
+export function CostsForm({ initialData, onSave, propertySize = 1000, propertyType = 'Office' }: Props) {
   const [formData, setFormData] = useState<CostsInputs>(initialData || defaultData);
   const [isSaving, setIsSaving] = useState(false);
+  const [warnings, setWarnings] = useState<ValidationWarning[]>([]);
+  const [isValidating, setIsValidating] = useState(false);
 
   useEffect(() => {
     if (initialData) {
       setFormData(initialData);
     }
   }, [initialData]);
+
+  // Debounced validation
+  const validateInputs = useCallback(async (data: CostsInputs) => {
+    setIsValidating(true);
+    try {
+      const response = await fetch('/api/ai/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          inputs: { costs: data },
+          propertySize,
+          propertyType,
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setWarnings(result.warnings || []);
+      }
+    } catch (error) {
+      console.error('Validation error:', error);
+    } finally {
+      setIsValidating(false);
+    }
+  }, [propertySize, propertyType]);
+
+  // Validate on data change (debounced)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      validateInputs(formData);
+    }, 1000); // 1 second debounce
+
+    return () => clearTimeout(timer);
+  }, [formData, validateInputs]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -196,6 +235,9 @@ export function CostsForm({ initialData, onSave }: Props) {
           />
         </div>
       </Card>
+
+      {/* AI Validation Warnings */}
+      <ValidationWarnings warnings={warnings} isLoading={isValidating} />
 
       {/* Save Button */}
       <div className="flex justify-end">
