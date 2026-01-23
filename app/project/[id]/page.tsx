@@ -122,6 +122,8 @@ export default function ProjectDetailPage() {
           <CostsForm
             initialData={project.inputs.costs}
             onSave={(data) => handleSaveSection('costs', data)}
+            propertySize={project.size}
+            propertyType={project.propertyType}
           />
         );
       case 'esg':
